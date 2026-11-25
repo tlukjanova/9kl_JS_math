@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaScript tests 9. klasei</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* VOICE: skaidrs, draudzīgs skolas tests
+   IDEA: programmētāja konsole — katrs jautājums ir koda rinda, kuras rezultāts jāatmin
+   PICTURE: tumšas konsoles kartītes ar kodu pie katra jautājuma
+   COLOUR and TYPE: ledus #dff1f7, tinte #06222e, rozā akcents #ff2e7e; Space Grotesk + Inter + JetBrains Mono
+   LAYOUT: viena lapa, viena kolonna līdz 760px, visi jautājumi pēc kārtas, iesniegšana apakšā */
+:root{color-scheme:light dark;--bg:light-dark(#dff1f7,#06222e);--ink:light-dark(#06222e,#e4f3f8);--card:light-dark(#ffffff,#0c3242);--line:light-dark(#b7d9e5,#1d4a5c);--soft:light-dark(#4a6b78,#9cc0cd);--pink:#ff2e7e;--ok:light-dark(#0b7a4b,#4fd69c);--bad:light-dark(#c4124f,#ff6f9f);--con:#06222e;--conInk:#dff1f7}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:760px;margin:0 auto}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,6vw,48px)}h2{font-size:clamp(22px,4vw,28px)}
+p{margin:.6em 0}.muted{color:var(--soft)}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.92em;overflow-wrap:anywhere}
+.console{background:var(--con);color:var(--conInk);border-radius:12px;padding:14px 18px;font:15px/1.6 "JetBrains Mono",monospace;border:1px solid #1d4a5c;overflow-x:auto;margin:10px 0 14px}
+.console pre{margin:0;white-space:pre-wrap;font:inherit}
+.topics{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:14px}
+label.f{display:block;font-weight:600;margin-bottom:6px}
+input[type=text]{width:100%;font:16px Inter,sans-serif;padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:48px}
+input[type=text]:focus{outline:none;border-color:var(--pink)}
+input.code{font-family:"JetBrains Mono",monospace;max-width:260px}
+.sticky{position:sticky;top:0;z-index:3;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;font-size:14px}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pink);transition:width .25s}
+.sec{margin:34px 0 4px;color:var(--soft);font-size:15px;font-weight:600}
+.qc{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+.qc.ok{border-left-color:var(--ok)}.qc.x{border-left-color:var(--bad)}
+.q{font-size:18px;font-weight:600;margin:0}
+.q .n{color:var(--pink);margin-right:6px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:center;font-size:16px;background:var(--bg);border:2px solid transparent;border-radius:10px;padding:10px 12px;cursor:pointer;min-height:48px}
+.opt input{width:20px;height:20px;accent-color:var(--pink);flex:none;margin:0}
+.opt:has(input:checked){border-color:var(--pink)}
+.opt:has(input:focus-visible){outline:3px solid var(--pink);outline-offset:2px}
+.opt.right{border-color:var(--ok)}
+.fb{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:15px}
+.fb .st{font-weight:600;color:var(--ok)}.qc.x .fb .st{color:var(--bad)}
+.btn{font:600 16px Inter,sans-serif;min-height:48px;padding:0 24px;border-radius:10px;border:2px solid var(--pink);background:var(--pink);color:#fff;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:26px}
+.warn{color:var(--bad);font-weight:600}
+.res{background:var(--con);color:var(--conInk);border-radius:16px;padding:22px;margin:22px 0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
+.big{font:700 clamp(52px,11vw,88px)/1 "Space Grotesk",sans-serif;color:var(--pink)}
+.res p{margin:.3em 0}
+table{width:100%;border-collapse:collapse;margin-top:14px;background:var(--card);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}th{font-size:14px;color:var(--soft)}
+td.good{color:var(--ok);font-weight:600}td.bad{color:var(--bad);font-weight:600}
+[hidden]{display:none!important}
+@media(max-width:600px){.res{grid-template-columns:1fr}.console{font-size:14px}.q{font-size:17px}}
+</style>
+</head>
+<body>
+<main class="band"><div class="wrap">
+  <p class="muted" style="margin:0 0 8px">Programmēšana · 9. klase</p>
+  <h1>Tests: aritmētiskās darbības un Math funkcijas JavaScript</h1>
+  <div class="topics"><span class="chip">+ − * / % **</span><span class="chip">Number() un toFixed()</span><span class="chip">Math.sqrt · pow · round · abs · PI</span></div>
+  <p>15 jautājumi. Dažos jāizvēlas viena pareizā atbilde, dažos jāieraksta rezultāts. Kad visi jautājumi atbildēti, spied <b>Iesniegt testu</b> lapas apakšā.</p>
+
+  <label class="f" for="nm" style="margin-top:18px">Vārds un uzvārds</label>
+  <input type="text" id="nm" autocomplete="name" placeholder="Piem., Anna Bērziņa">
+  <label class="f" for="kl" style="margin-top:14px">Klase</label>
+  <input type="text" id="kl" autocomplete="off" placeholder="Piem., 9.a" style="max-width:200px">
+
+  <div id="res" hidden></div>
+
+  <div class="sticky" id="stk"><span id="cnt"></span><div class="bar"><i id="barI"></i></div></div>
+
+  <form id="quiz" novalidate></form>
+  <div class="foot">
+    <button class="btn" id="send" type="button">Iesniegt testu</button>
+    <button class="btn ghost" id="again" type="button" hidden>Pildīt vēlreiz</button>
+    <span id="msg" class="warn" role="status"></span>
+  </div>
+  <div id="key" hidden></div>
+</div></main>
+
+<script>
+{
+const A='Aritmētiskās darbības', M='Matemātiskās funkcijas (Math)';
+// t: 'c' = izvēle (a = pareizā varianta indekss), 'i' = ievade (a = pieņemamās atbildes)
+const Q=[
+{tp:A,t:'c',q:'Kurš operators aprēķina dalīšanas atlikumu?',o:['/','%','**','//'],a:1,e:'<code>%</code> dod atlikumu, piemēram, <code>10 % 3</code> ir 1.'},
+{tp:A,t:'i',q:'Kāds būs izteiksmes rezultāts?',c:'2 + 3 * 2 ** 2',a:['14'],e:'Vispirms pakāpe: 2 ** 2 = 4, tad 3 * 4 = 12, beigās 2 + 12 = 14.'},
+{tp:A,t:'c',q:'Lietotājs prompt logos ievada 5 un 3. Ko parādīs programma?',c:'let a = prompt("Pirmais skaitlis:");\nlet b = prompt("Otrais skaitlis:");\nalert(a + b);',o:['8','53','a + b','Kļūdu'],a:1,e:'<code>prompt()</code> atgriež tekstu, tāpēc "5" + "3" = "53". Vajag <code>Number()</code>.'},
+{tp:A,t:'c',q:'Kurā rindā ievadītā vērtība ir pareizi pārveidota par skaitli?',o:['let a = prompt(Number("Ievadi skaitli:"));','let a = Number(prompt("Ievadi skaitli:"));','let a = prompt("Ievadi skaitli:").Number;'],a:1,e:'<code>prompt()</code> iegūst tekstu, <code>Number()</code> to pārveido skaitlī.'},
+{tp:A,t:'i',q:'Ko atgriezīs šī izteiksme?',c:'(10 / 3).toFixed(2)',a:['3.33'],e:'10 / 3 = 3.3333…; <code>toFixed(2)</code> atstāj 2 ciparus aiz komata: "3.33".'},
+{tp:M,t:'i',q:'Kāds būs rezultāts?',c:'Math.sqrt(81)',a:['9'],e:'<code>Math.sqrt()</code> izvelk kvadrātsakni: 9 · 9 = 81.'},
+{tp:M,t:'i',q:'Kāds būs rezultāts?',c:'Math.pow(3, 3)',a:['27'],e:'<code>Math.pow(bāze, kāpinātājs)</code>: 3³ = 27. Tas pats, kas <code>3 ** 3</code>.'},
+{tp:M,t:'c',q:'Kāds būs rezultāts?',c:'Math.round(6.5)',o:['6','6.5','7','65'],a:2,e:'<code>Math.round()</code> noapaļo līdz tuvākajam veselajam skaitlim; .5 noapaļo uz augšu: 7.'},
+{tp:M,t:'i',q:'Kāds būs rezultāts?',c:'Math.abs(-7.5)',a:['7.5'],e:'<code>Math.abs()</code> atgriež skaitļa moduli — skaitli bez mīnusa zīmes.'},
+{tp:M,t:'c',q:'Kāpēc pēc <code>Math.PI</code> neraksta iekavas?',o:['Tā ir kļūda — vajag Math.PI()','Math.PI ir konstante, nevis metode','Iekavas var izlaist jebkurai metodei','Jo π ir vesels skaitlis'],a:1,e:'<code>Math.PI</code> ir konstante ≈ 3.14159. Iekavas raksta metodēm, piemēram, <code>Math.sqrt(9)</code>.'},
+{tp:M,t:'c',q:'Kurš pieraksts ir pareizs?',o:['math.sqrt(25)','Math.Sqrt(25)','Math.sqrt(25)','sqrt(25)'],a:2,e:'<code>Math</code> ar lielo burtu, punkts, metode ar mazo burtu. JavaScript atšķir lielos un mazos burtus.'},
+{tp:M,t:'c',q:'Kura rinda pareizi aprēķina riņķa laukumu S = πr²?',o:['let S = PI * r * 2;','let S = Math.PI * Math.pow(r, 2);','let S = Math.pow(PI, r);','let S = Math.sqrt(Math.PI * r);'],a:1,e:'π ir <code>Math.PI</code>, r² ir <code>Math.pow(r, 2)</code> (vai <code>r ** 2</code>).'},
+{tp:M,t:'i',q:'Kāda vērtība tiks piešķirta mainīgajam <code>S</code>? Rēķinot ņem <b>π = 3.1415</b>.',c:'let r = 3;\nlet S = (Math.PI * Math.pow(r, 2)).toFixed(2);',a:['28.27'],e:'3.1415 · 3² = 3.1415 · 9 = 28.2735, noapaļots līdz 2 cipariem aiz komata, tātad S = "28.27".'},
+{tp:M,t:'i',q:'Kāda vērtība tiks piešķirta mainīgajam <code>x</code>?',c:'let x = Math.round(7.8) + Math.abs(-2);',a:['10'],e:'Math.round(7.8) = 8, Math.abs(-2) = 2, tātad x = 8 + 2 = 10.'},
+{tp:M,t:'i',q:'Taisnleņķa trijstūra katetes ir 3 un 4. Kāds būs hipotenūzas garums jeb mainīgā <code>c</code> vērtība?',c:'let c = Math.sqrt(3 ** 2 + 4 ** 2);',a:['5'],e:'3² + 4² = 9 + 16 = 25, √25 = 5, tātad c = 5.'}
+];
+// Īss apraksts katram uzdevumam (skolotājas e-pastam)
+const D=['Operators % (dalīšanas atlikums)','Darbību secība: 2 + 3 * 2 ** 2','prompt() atgriež tekstu ("5"+"3")','Number(prompt(...)) pieraksts','toFixed(2): (10 / 3)','Math.sqrt(81)','Math.pow(3, 3)','Math.round(6.5)','Math.abs(-7.5)','Math.PI ir konstante','Pareizs pieraksts Math.sqrt(25)','Riņķa laukuma formula JS','Riņķa laukums, r = 3, toFixed(2)','Math.round(7.8) + Math.abs(-2)','Hipotenūza ar Math.sqrt'];
+const TEACHER='tlukjanova78@gmail.com';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const norm=s=>String(s??'').trim().replace(/^["'`]|["'`]$/g,'').replace(',','.').replace(/\s+/g,'');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const isCode=s=>/[()=*;]|^\d|^[a-z]/.test(s);
+let done=false;
+
+function build(){
+  let last='';
+  $('quiz').innerHTML=Q.map((q,i)=>{
+    let h=q.tp!==last?`<h2 class="sec">${q.tp}</h2>`:'';last=q.tp;
+    h+=`<fieldset class="qc" id="q${i}" style="margin-inline:0"><legend class="q" style="padding:0;float:left;width:100%"><span class="n">${i+1}.</span>${q.q}</legend><div style="clear:both"></div>`+(q.c?`<div class="console"><pre>${esc(q.c)}</pre></div>`:'<div style="height:12px"></div>');
+    if(q.t==='c')h+=`<div class="opts">`+shuffle(q.o.map((_,k)=>k)).map(k=>`<label class="opt" data-k="${k}"><input type="radio" name="a${i}" value="${k}"><span${isCode(q.o[k])?' class="mono"':''}>${esc(q.o[k])}</span></label>`).join('')+`</div>`;
+    else h+=`<label class="f" for="a${i}">Tava atbilde</label><input type="text" class="code" id="a${i}" name="a${i}" inputmode="decimal" autocomplete="off">`;
+    return h+`<div class="fb" hidden></div></fieldset>`;
+  }).join('');
+  prog();
+}
+const val=i=>{const q=Q[i];if(q.t==='c'){const r=document.querySelector(`input[name=a${i}]:checked`);return r?+r.value:null}return norm($('a'+i).value)||null};
+const right=q=>q.t==='c'?q.o[q.a]:q.a[0];
+const ok=i=>{const v=val(i),q=Q[i];return q.t==='c'?v===q.a:q.a.includes(v)};
+function prog(){const n=Q.filter((_,i)=>val(i)!=null).length;$('cnt').textContent=`Atbildēti ${n} no ${Q.length}`;$('barI').style.width=n/Q.length*100+'%'}
+$('quiz').addEventListener('input',prog);
+$('quiz').addEventListener('change',prog);
+$('quiz').addEventListener('submit',e=>e.preventDefault());
+
+let confirmLeft=false;
+$('send').addEventListener('click',()=>{
+  if(done)return;
+  if(!$('nm').value.trim()){$('msg').textContent='Ieraksti savu vārdu un uzvārdu lapas augšā.';$('nm').focus();return}
+  if(!$('kl').value.trim()){$('msg').textContent='Ieraksti savu klasi lapas augšā.';$('kl').focus();return}
+  const left=Q.filter((_,i)=>val(i)==null).length;
+  if(left&&!confirmLeft){confirmLeft=true;$('msg').textContent=`Neatbildēti jautājumi: ${left}. Spied „Iesniegt testu” vēlreiz, ja tomēr vēlies iesniegt.`;return}
+  grade();
+});
+
+function grade(){
+  done=true;$('msg').textContent='';
+  const r=Q.map((_,i)=>ok(i)),pts=r.filter(Boolean).length,pct=Math.round(pts/Q.length*100);
+  const part=tp=>{const ix=Q.map((q,i)=>q.tp===tp?i:-1).filter(i=>i>=0);return `${ix.filter(i=>r[i]).length} no ${ix.length}`};
+  Q.forEach((q,i)=>{
+    const box=$('q'+i),fb=box.querySelector('.fb');
+    box.classList.add(r[i]?'ok':'x');
+    box.querySelectorAll('input').forEach(x=>x.disabled=true);
+    if(q.t==='c')box.querySelector(`.opt[data-k="${q.a}"]`).classList.add('right');
+    const yours=val(i)==null?'nav atbildēts':(q.t==='c'?q.o[val(i)]:val(i));
+    fb.innerHTML=`<span class="st">${r[i]?'Pareizi':'Nepareizi'}</span><br>Tava atbilde: <code>${esc(yours)}</code><br><b>Pareizā atbilde: <code>${esc(right(q))}</code></b><br><span class="muted">${q.e}</span>`;
+    fb.hidden=false;
+  });
+  $('key').innerHTML=`<h2 style="margin-top:34px">Pareizās atbildes</h2><table><thead><tr><th>Nr.</th><th>Uzdevums</th><th>Pareizā atbilde</th><th>Punkti</th></tr></thead><tbody>`+
+    Q.map((q,i)=>`<tr><td>${i+1}.</td><td>${esc(D[i])}</td><td><code>${esc(right(q))}</code></td><td class="${r[i]?'good':'bad'}">${r[i]?'✓ 1':'✗ 0'}</td></tr>`).join('')+`<tr><td></td><td><b>Kopā</b></td><td></td><td><b>${pts} / ${Q.length}</b></td></tr></tbody></table>`;
+  $('key').hidden=false;
+  const msg=pct>=90?'Izcili! Tu lieliski pārzini tēmu.':pct>=70?'Labi padarīts! Pārskati kļūdas zemāk.':pct>=50?'Pamatus tu zini — atkārto Math metodes un darbību secību.':'Vēlreiz pārskati prezentācijas un mēģini atkal.';
+  const when=new Date().toLocaleString('lv-LV',{dateStyle:'medium',timeStyle:'short'});
+  $('nm').disabled=true;$('kl').disabled=true;
+  const nm=$('nm').value.trim(),kl=$('kl').value.trim();
+  const yourTxt=i=>{const v=val(i),q=Q[i];return v==null?'—':(q.t==='c'?q.o[v]:v)};
+  const body=`JavaScript tests – rezultāts\n\nSkolēns: ${nm}\nKlase: ${kl}\nDatums: ${when}\nKopā: ${pts} / ${Q.length} punkti (${pct}%)\n\nNr. | Uzdevums | Skolēna atbilde | Punkti\n`+
+    Q.map((q,i)=>`${i+1}. | ${D[i]} | ${yourTxt(i)} | ${r[i]?1:0}/1`).join('\n')+`\n\nKopā: ${pts} / ${Q.length}`;
+  const subj=`JS tests: ${nm}, ${kl} – ${pts}/${Q.length}`;
+  const gm='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(TEACHER)+'&su='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+  const mt='mailto:'+TEACHER+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+  $('res').innerHTML=`<div class="res"><div class="big">${pts}/${Q.length}</div><div><p style="opacity:.8">${esc(nm)} · ${esc(kl)} · ${esc(when)}</p><h2>${pct}% · ${msg}</h2><p>${A}: ${part(A)} pareizi<br>${M}: ${part(M)} pareizi</p></div></div>
+  <div class="qc" style="border-left-color:var(--pink)"><p class="q" id="sst">Sūta rezultātu skolotājai…</p>
+  <div id="fbk" hidden><p>Automātiski nosūtīt neizdevās. Spied pogu — atvērsies jau aizpildīts e-pasts. Tad spied <b>Sūtīt</b>.</p>
+  <div class="foot" style="margin-top:12px"><a class="btn" style="display:inline-flex;align-items:center;text-decoration:none" href="${esc(gm)}" target="_blank" rel="noopener">Sūtīt ar Gmail</a><a class="btn ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="${esc(mt)}">Cita e-pasta programma</a><button class="btn ghost" type="button" id="cp">Kopēt rezultātu</button></div>
+  <p class="muted" style="font-size:14px">Ja pogas nedarbojas, nokopē rezultātu un nosūti to uz <b>${TEACHER}</b>.</p><span id="cpm" class="muted" role="status"></span></div></div>`;
+  // Automātiska nosūtīšana caur FormSubmit (strādā, kad lapa ir publicēta, piem., GitHub Pages)
+  const data={_subject:subj,_template:'table',_captcha:'false','Skolēns':nm,'Klase':kl,'Datums':when,'Kopā':`${pts} / ${Q.length} (${pct}%)`};
+  Q.forEach((q,i)=>{data[`${String(i+1).padStart(2,'0')}. ${D[i]}`]=`${r[i]?1:0}/1 · atbilde: ${yourTxt(i)}`});
+  fetch('https://formsubmit.co/ajax/'+TEACHER,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+    .then(res=>res.json().then(j=>{if(!res.ok||String(j.success)!=='true')throw new Error(j.message||'kļūda')}))
+    .then(()=>{$('sst').textContent='✓ Rezultāts nosūtīts skolotājai.'})
+    .catch(()=>{$('sst').textContent='Nosūti rezultātu skolotājai';$('fbk').hidden=false});
+  $('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(body);$('cpm').textContent='Nokopēts!'}catch(e){$('cpm').textContent='Neizdevās nokopēt — iezīmē tabulu lapas beigās un nokopē to.'}});
+  $('res').hidden=false;$('stk').hidden=true;$('send').hidden=true;$('again').hidden=false;
+  $('res').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('again').addEventListener('click',()=>{
+  done=false;confirmLeft=false;$('nm').disabled=false;$('kl').disabled=false;$('res').hidden=true;$('key').hidden=true;$('stk').hidden=false;$('send').hidden=false;$('again').hidden=true;build();window.scrollTo({top:0});
+});
+build();
+}
+</script>
+</body>
+</html>
