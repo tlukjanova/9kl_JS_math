@@ -66,7 +66,7 @@ td.good{color:var(--ok);font-weight:600}td.bad{color:var(--bad);font-weight:600}
   <p class="muted" style="margin:0 0 8px">Programmēšana · 9. klase</p>
   <h1>Tests: aritmētiskās darbības un Math funkcijas JavaScript</h1>
   <div class="topics"><span class="chip">+ − * / % **</span><span class="chip">Number() un toFixed()</span><span class="chip">Math.sqrt · pow · round · abs · PI</span></div>
-  <p>15 jautājumi. Dažos jāizvēlas viena pareizā atbilde, dažos jāieraksta rezultāts. Kad visi jautājumi atbildēti, spied <b>Iesniegt testu</b> lapas apakšā.</p>
+  <p>15 jautājumi. Dažos jāizvēlas viena pareizā atbilde, dažos jāieraksta rezultāts. Kad visi jautājumi atbildēti, spied <b>Iesniegt testu</b> lapas apakšā — rezultāts tiks nosūtīts skolotājai, un tu saņemsi PDF failu ar saviem rezultātiem.</p>
 
   <label class="f" for="nm" style="margin-top:18px">Vārds un uzvārds</label>
   <input type="text" id="nm" autocomplete="name" placeholder="Piem., Anna Bērziņa">
@@ -86,6 +86,8 @@ td.good{color:var(--ok);font-weight:600}td.bad{color:var(--bad);font-weight:600}
   <div id="key" hidden></div>
 </div></main>
 
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/vfs_fonts.js"></script>
 <script>
 {
 const A='Aritmētiskās darbības', M='Matemātiskās funkcijas (Math)';
@@ -173,6 +175,7 @@ function grade(){
   const gm='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(TEACHER)+'&su='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
   const mt='mailto:'+TEACHER+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
   $('res').innerHTML=`<div class="res"><div class="big">${pts}/${Q.length}</div><div><p style="opacity:.8">${esc(nm)} · ${esc(kl)} · ${esc(when)}</p><h2>${pct}% · ${msg}</h2><p>${A}: ${part(A)} pareizi<br>${M}: ${part(M)} pareizi</p></div></div>
+  <div class="qc" style="border-left-color:var(--pink)"><p class="q">Tavs rezultāts PDF failā</p><p id="pdfm" class="muted">Gatavo PDF…</p><div class="foot" style="margin-top:8px"><button class="btn" type="button" id="pdfb">Lejupielādēt PDF</button></div></div>
   <div class="qc" style="border-left-color:var(--pink)"><p class="q" id="sst">Sūta rezultātu skolotājai…</p>
   <div id="fbk" hidden><p>Automātiski nosūtīt neizdevās. Spied pogu — atvērsies jau aizpildīts e-pasts. Tad spied <b>Sūtīt</b>.</p>
   <div class="foot" style="margin-top:12px"><a class="btn" style="display:inline-flex;align-items:center;text-decoration:none" href="${esc(gm)}" target="_blank" rel="noopener">Sūtīt ar Gmail</a><a class="btn ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="${esc(mt)}">Cita e-pasta programma</a><button class="btn ghost" type="button" id="cp">Kopēt rezultātu</button></div>
@@ -184,6 +187,26 @@ function grade(){
     .then(res=>res.json().then(j=>{if(!res.ok||String(j.success)!=='true')throw new Error(j.message||'kļūda')}))
     .then(()=>{$('sst').textContent='✓ Rezultāts nosūtīts skolotājai.'})
     .catch(()=>{$('sst').textContent='Nosūti rezultātu skolotājai';$('fbk').hidden=false});
+  // PDF ar rezultātu tabulu (pdfmake, Roboto fonts atbalsta latviešu burtus)
+  const pdfName=('JS_tests_'+nm+'_'+kl).replace(/[^\p{L}\p{N}]+/gu,'_')+'.pdf';
+  const makePdf=()=>{
+    if(!window.pdfMake){$('pdfm').textContent='PDF neizdevās izveidot — pārbaudi interneta savienojumu un spied pogu vēlreiz.';return}
+    const H=t=>({text:t,bold:true,fillColor:'#06222e',color:'#ffffff'});
+    const rows=[[H('Nr.'),H('Uzdevums'),H('Skolēna atbilde'),H('Pareizā atbilde'),{...H('Iegūtie punkti'),alignment:'center'}]];
+    Q.forEach((q,i)=>rows.push([`${i+1}.`,D[i],String(yourTxt(i)),String(right(q)),{text:`${r[i]?1:0}`,alignment:'center',bold:true,color:r[i]?'#0b7a4b':'#c4124f'}]));
+    rows.push([{text:'Kopā',bold:true,colSpan:4,alignment:'right',fillColor:'#dff1f7'},{},{},{},{text:`${pts} / ${Q.length}`,bold:true,alignment:'center',fillColor:'#dff1f7'}]);
+    const dd={pageSize:'A4',pageMargins:[36,40,36,40],defaultStyle:{font:'Roboto',fontSize:10},
+      content:[
+        {text:'JavaScript tests: aritmētiskās darbības un Math funkcijas',fontSize:16,bold:true,margin:[0,0,0,10]},
+        {columns:[{text:[{text:'Skolēns: ',bold:true},nm]},{text:[{text:'Klase: ',bold:true},kl]},{text:[{text:'Datums: ',bold:true},when]}],margin:[0,0,0,12]},
+        {table:{headerRows:1,widths:[22,'*',110,110,50],body:rows},layout:{hLineColor:'#b7d9e5',vLineColor:'#b7d9e5',paddingTop:()=>4,paddingBottom:()=>4}},
+        {text:[{text:'Kopējais punktu skaits: ',bold:true},`${pts} no ${Q.length} (${pct}%)`],fontSize:13,margin:[0,14,0,0]}
+      ]};
+    try{pdfMake.createPdf(dd).download(pdfName);$('pdfm').textContent=`PDF fails „${pdfName}” lejupielādēts. Ja tas neparādījās, spied pogu.`}
+    catch(e){$('pdfm').textContent='PDF neizdevās izveidot. Spied pogu vēlreiz.'}
+  };
+  $('pdfb').addEventListener('click',makePdf);
+  makePdf();
   $('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(body);$('cpm').textContent='Nokopēts!'}catch(e){$('cpm').textContent='Neizdevās nokopēt — iezīmē tabulu lapas beigās un nokopē to.'}});
   $('res').hidden=false;$('stk').hidden=true;$('send').hidden=true;$('again').hidden=false;
   $('res').scrollIntoView({behavior:'smooth',block:'start'});
